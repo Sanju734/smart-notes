@@ -1,0 +1,630 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NoteSense</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color: #f8fafc;
+      font-family: "Inter", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-synthesis: none;
+      background: #0b1020;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      padding: 48px 24px;
+      overflow-x: hidden;
+      background: #0b1020;
+    }
+
+    .aurora {
+      position: fixed;
+      z-index: 0;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .aurora::after {
+      position: absolute;
+      z-index: 1;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.22'/%3E%3C/svg%3E");
+      opacity: .13;
+      content: "";
+      mix-blend-mode: soft-light;
+    }
+
+    .aurora-blob {
+      position: absolute;
+      width: min(48vw, 620px);
+      aspect-ratio: 1;
+      border-radius: 50%;
+      filter: blur(90px);
+      opacity: .55;
+      animation: aurora-drift 25s ease-in-out infinite alternate;
+      will-change: transform;
+    }
+
+    .blob-violet { top: -30%; left: -12%; background: #7c3aed; }
+    .blob-teal { top: 5%; right: -15%; background: #14b8a6; animation-delay: -7s; }
+    .blob-pink { bottom: -48%; left: 24%; background: #ec4899; animation-delay: -13s; }
+    .blob-amber { right: 12%; bottom: -45%; background: #f59e0b; animation-delay: -19s; }
+
+    @keyframes aurora-drift {
+      from { transform: translate3d(-4%, -3%, 0) scale(.92); }
+      to { transform: translate3d(7%, 8%, 0) scale(1.12); }
+    }
+
+    .grain {
+      position: fixed;
+      z-index: 1;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.2'/%3E%3C/svg%3E");
+      opacity: .12;
+      pointer-events: none;
+      mix-blend-mode: soft-light;
+    }
+
+    main { position: relative; z-index: 2; width: min(760px, 100%); margin: 0 auto; }
+
+    header { margin: 0 0 30px 4px; }
+
+    h1 {
+      margin: 0;
+      background: linear-gradient(100deg, #a78bfa 5%, #2dd4bf 48%, #f472b6 88%, #a78bfa);
+      background-size: 220% auto;
+      background-clip: text;
+      color: transparent;
+      font-family: "Space Grotesk", "Inter", sans-serif;
+      font-size: 48px;
+      font-weight: 700;
+      letter-spacing: -.055em;
+      -webkit-background-clip: text;
+      animation: title-shimmer 12s ease-in-out infinite alternate;
+    }
+
+    @keyframes title-shimmer {
+      from { background-position: 0% center; }
+      to { background-position: 100% center; }
+    }
+
+    header p { margin: 4px 0 0; color: #cbd5e1; font-size: 1.02rem; }
+
+    .panel {
+      padding: clamp(20px, 4vw, 32px);
+      border: 1px solid rgba(255, 255, 255, .15);
+      border-radius: 18px;
+      background: rgba(255, 255, 255, .08);
+      box-shadow: 0 24px 70px rgba(0, 0, 0, .28);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+    }
+
+    form, .toolbar { display: flex; align-items: center; gap: 10px; margin: 0 0 14px; }
+
+    input, select {
+      min-width: 0;
+      min-height: 46px;
+      padding: 10px 14px;
+      border: 1px solid rgba(255, 255, 255, .2);
+      border-radius: 12px;
+      background: rgba(255, 255, 255, .1);
+      color: #f8fafc;
+      font: inherit;
+      outline: none;
+    }
+
+    input { flex: 1; }
+    input::placeholder { color: #cbd5e1; opacity: .72; }
+    input:focus, select:focus { border-color: #2dd4bf; box-shadow: 0 0 0 3px rgba(45, 212, 191, .28), 0 0 22px rgba(20, 184, 166, .2); }
+    select option { background: #111a30; color: #f8fafc; }
+
+    button {
+      min-height: 44px;
+      padding: 9px 16px;
+      border: 1px solid transparent;
+      border-radius: 12px;
+      background: linear-gradient(110deg, #7c3aed, #0f9f92);
+      color: #fff;
+      font: inherit;
+      font-weight: 650;
+      cursor: pointer;
+      box-shadow: 0 5px 16px rgba(80, 65, 190, .25);
+      transition: box-shadow .18s ease, transform .18s ease;
+      white-space: nowrap;
+    }
+
+    button:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(45, 212, 191, .25), 0 0 18px rgba(124, 58, 237, .2); }
+    button:active { transform: translateY(0); }
+    button:focus-visible { outline: 3px solid rgba(45, 212, 191, .65); outline-offset: 2px; }
+    button.secondary {
+      border: 1px solid rgba(255, 255, 255, .32);
+      background: rgba(255, 255, 255, .07);
+      color: #f8fafc;
+      box-shadow: none;
+    }
+    button.secondary:hover { background: rgba(255, 255, 255, .14); box-shadow: 0 0 18px rgba(255, 255, 255, .1); }
+
+    .toolbar { justify-content: space-between; margin-bottom: 20px; }
+    .toolbar select { min-width: 185px; }
+
+    .search-form { margin-top: 20px; }
+
+    .list-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 25px 2px 10px;
+    }
+
+    .list-heading h2 { margin: 0; color: #f8fafc; font-size: 1rem; font-weight: 700; }
+    #note-count { color: #cbd5e1; font-size: .9rem; }
+    #message { min-height: 1.4em; margin: 10px 2px; color: #fda4af; font-size: .93rem; }
+    #message:empty { min-height: 0; margin: 0; }
+
+    ul { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
+
+    .note-card {
+      padding: 16px 18px;
+      position: relative;
+      border: 1px solid rgba(255, 255, 255, .15);
+      border-radius: 18px;
+      background: rgba(255, 255, 255, .08);
+      box-shadow: 0 10px 28px rgba(0, 0, 0, .18);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      animation: note-enter .35s ease-out both;
+      transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+    }
+
+    @keyframes note-enter {
+      from { opacity: 0; transform: translateY(9px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .note-card::before {
+      position: absolute;
+      top: 14px;
+      bottom: 14px;
+      left: 0;
+      width: 3px;
+      border-radius: 0 4px 4px 0;
+      background: #94a3b8;
+      content: "";
+      box-shadow: 0 0 10px currentColor;
+    }
+
+    .note-card:hover { transform: translateY(-4px); border-color: rgba(255, 255, 255, .28); box-shadow: 0 18px 36px rgba(0, 0, 0, .28), 0 0 24px rgba(148, 163, 184, .17); }
+    .note-card.study::before { background: #60a5fa; color: #60a5fa; }
+    .note-card.money::before { background: #34d399; color: #34d399; }
+    .note-card.travel::before { background: #c084fc; color: #c084fc; }
+    .note-card.shopping::before { background: #fbbf24; color: #fbbf24; }
+    .note-card.study:hover { box-shadow: 0 18px 36px rgba(0, 0, 0, .28), 0 0 24px rgba(96, 165, 250, .2); }
+    .note-card.money:hover { box-shadow: 0 18px 36px rgba(0, 0, 0, .28), 0 0 24px rgba(52, 211, 153, .2); }
+    .note-card.travel:hover { box-shadow: 0 18px 36px rgba(0, 0, 0, .28), 0 0 24px rgba(192, 132, 252, .2); }
+    .note-card.shopping:hover { box-shadow: 0 18px 36px rgba(0, 0, 0, .28), 0 0 24px rgba(251, 191, 36, .2); }
+    .note-text { color: #f8fafc; font-size: 1rem; line-height: 1.55; overflow-wrap: anywhere; }
+    .note-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 12px; }
+    .id-tag, .category-tag, .uncertain-badge, .confidence, .score {
+      display: inline-flex;
+      align-items: center;
+      min-height: 25px;
+      padding: 3px 9px;
+      border-radius: 999px;
+      font-size: .78rem;
+      font-weight: 650;
+    }
+
+    .id-tag { background: rgba(255, 255, 255, .13); color: #f8fafc; }
+    .category-tag.study { background: #60a5fa; color: #0b1020; box-shadow: 0 0 13px rgba(96, 165, 250, .27); }
+    .category-tag.money { background: #30cc93; color: #0b1020; box-shadow: 0 0 13px rgba(52, 211, 153, .25); }
+    .category-tag.travel { background: #c084fc; color: #0b1020; box-shadow: 0 0 13px rgba(192, 132, 252, .26); }
+    .category-tag.shopping { background: #fbbf24; color: #0b1020; box-shadow: 0 0 13px rgba(251, 191, 36, .22); }
+    .confidence, .score { background: rgba(255, 255, 255, .1); color: #cbd5e1; font-weight: 550; }
+    .score.no-match { border: 1px solid rgba(244, 114, 182, .5); background: rgba(244, 114, 182, .1); color: #f9a8d4; }
+    .delete-button { min-height: 30px; padding: 4px 11px; border: 1px solid rgba(244, 114, 182, .55); background: rgba(244, 114, 182, .1); color: #fbcfe8; font-size: .78rem; box-shadow: none; }
+    .delete-button:hover { background: rgba(244, 114, 182, .22); box-shadow: 0 0 14px rgba(244, 114, 182, .2); }
+    .note-actions { display: flex; gap: 8px; margin-top: 10px; }
+    .note-actions button { min-height: 30px; padding: 4px 11px; font-size: .78rem; }
+    .why-button { border: 1px solid rgba(45, 212, 191, .45); background: rgba(45, 212, 191, .1); color: #99f6e4; box-shadow: none; }
+    .why-button:hover { background: rgba(45, 212, 191, .18); box-shadow: 0 0 14px rgba(45, 212, 191, .18); }
+    .why-panel { margin-top: 10px; padding: 11px 12px; border: 1px solid rgba(255, 255, 255, .15); border-radius: 12px; background: rgba(255, 255, 255, .06); }
+    .why-summary { margin-bottom: 9px; color: #cbd5e1; font-size: .82rem; }
+    .why-features { display: flex; flex-wrap: wrap; gap: 7px; }
+    .why-chip { padding: 4px 9px; border: 1px solid rgba(192, 132, 252, .32); border-radius: 999px; background: rgba(192, 132, 252, .13); color: #ede9fe; font-size: .76rem; }
+    .why-error { color: #fda4af; font-size: .85rem; }
+    .ask-section { margin: 28px 0 8px; padding-top: 20px; border-top: 1px solid rgba(255, 255, 255, .15); }
+    .ask-section h2 { margin: 0 0 6px; color: #f8fafc; font-size: 1.05rem; }
+    .ask-section p { margin: 0 0 12px; color: #cbd5e1; font-size: .88rem; }
+    .ask-answer { display: none; margin-top: 14px; padding: 13px 15px; border: 1px solid rgba(255, 255, 255, .16); border-radius: 12px; background: rgba(255, 255, 255, .07); color: #f8fafc; line-height: 1.5; }
+    .ask-answer.visible { display: block; }
+    .ask-evidence { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 10px; }
+    .ask-evidence span { padding: 4px 9px; border-radius: 999px; background: rgba(192, 132, 252, .18); color: #e9d5ff; font-size: .78rem; }
+    .uncertain-badge {
+      gap: 5px;
+      border: 1px solid #f472b6;
+      background: rgba(244, 114, 182, .12);
+      color: #fbcfe8;
+      box-shadow: 0 0 10px rgba(244, 114, 182, .17);
+      animation: uncertain-pulse 2.8s ease-in-out infinite;
+    }
+    .uncertain-badge::before {
+      display: inline-grid;
+      width: 15px;
+      height: 15px;
+      place-items: center;
+      border: 1px solid #f472b6;
+      border-radius: 50%;
+      content: "?";
+      font-size: .68rem;
+      line-height: 1;
+    }
+
+    @keyframes uncertain-pulse {
+      50% { box-shadow: 0 0 17px rgba(244, 114, 182, .42); }
+    }
+
+    .empty-state { padding: 28px 12px; color: #cbd5e1; text-align: center; }
+
+    @media (max-width: 600px) {
+      body { padding: 28px 14px; }
+      .panel { padding: 20px 16px; }
+      form, .toolbar { align-items: stretch; flex-wrap: wrap; }
+      form input { flex-basis: 100%; }
+      .toolbar select { flex: 1; }
+      .toolbar button { flex: 1; }
+      .search-form button { flex: 1; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: .01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="aurora" aria-hidden="true">
+    <span class="aurora-blob blob-violet"></span>
+    <span class="aurora-blob blob-teal"></span>
+    <span class="aurora-blob blob-pink"></span>
+    <span class="aurora-blob blob-amber"></span>
+  </div>
+  <div class="grain" aria-hidden="true"></div>
+  <main>
+    <header>
+      <h1>NoteSense</h1>
+      <p>Notes that sort themselves</p>
+    </header>
+
+    <section class="panel" aria-label="Notes">
+      <form id="note-form">
+        <input id="note-text" maxlength="1000" placeholder="What would you like to remember?" aria-label="Note text">
+        <button type="submit">Add note</button>
+      </form>
+
+      <div class="toolbar">
+        <select id="category-filter" aria-label="Filter notes">
+          <option value="">All</option>
+          <option value="Study">Study</option>
+          <option value="Money">Money</option>
+          <option value="Travel">Travel</option>
+          <option value="Shopping">Shopping</option>
+          <option value="Uncertain">Uncertain</option>
+        </select>
+        <button id="load-starter" class="secondary" type="button">Load starter notes</button>
+      </div>
+
+      <form id="search-form" class="search-form">
+        <input id="search-query" maxlength="1000" placeholder="Search your notes" aria-label="Search notes">
+        <button type="submit">Search</button>
+        <button id="clear-search" class="secondary" type="button">Clear</button>
+      </form>
+
+      <section class="ask-section" aria-labelledby="ask-title">
+        <h2 id="ask-title">Ask your notes</h2>
+        <p>Get an answer using only the notes you have saved.</p>
+        <form id="ask-form">
+          <input id="ask-question" maxlength="1000" placeholder="For example: when is my flight?" aria-label="Question about your notes">
+          <button type="submit">Ask</button>
+        </form>
+        <div id="ask-answer" class="ask-answer" role="status" aria-live="polite"></div>
+      </section>
+
+      <p id="message" role="status" aria-live="polite"></p>
+      <div class="list-heading">
+        <h2 id="list-title">Your notes</h2>
+        <span id="note-count">0 notes</span>
+      </div>
+      <ul id="notes-list"></ul>
+    </section>
+  </main>
+
+  <script>
+    const list = document.querySelector("#notes-list");
+    const message = document.querySelector("#message");
+    const count = document.querySelector("#note-count");
+    const listTitle = document.querySelector("#list-title");
+    let allNotes = [];
+    let currentResults = null;
+
+    function filteredNotes(notes) {
+      const filter = document.querySelector("#category-filter").value;
+      if (filter === "Uncertain") return notes.filter((note) => note.uncertain);
+      if (filter) return notes.filter((note) => note.category === filter);
+      return notes;
+    }
+
+    function showNotes(notes, searchResults = false) {
+      list.replaceChildren();
+      const visibleNotes = filteredNotes(notes);
+      count.textContent = `${visibleNotes.length} ${searchResults ? "result" : "note"}${visibleNotes.length === 1 ? "" : "s"}`;
+
+      if (!visibleNotes.length) {
+        const empty = document.createElement("li");
+        empty.className = "empty-state";
+        empty.textContent = searchResults ? "No good match" : "No notes here yet.";
+        list.append(empty);
+        return;
+      }
+
+      for (const note of visibleNotes) {
+        const card = document.createElement("li");
+        card.className = `note-card ${note.category.toLowerCase()}`;
+
+        const text = document.createElement("div");
+        text.className = "note-text";
+        text.textContent = note.text;
+
+        const meta = document.createElement("div");
+        meta.className = "note-meta";
+
+        const id = document.createElement("span");
+        id.className = "id-tag";
+        id.textContent = note.id;
+
+        const category = document.createElement("span");
+        category.className = `category-tag ${note.category.toLowerCase()}`;
+        category.textContent = note.category;
+        meta.append(id, category);
+
+        if (typeof note.confidence === "number") {
+          const confidence = document.createElement("span");
+          confidence.className = "confidence";
+          confidence.textContent = `Confidence ${Math.round(note.confidence * 100)}%`;
+          meta.append(confidence);
+        }
+
+        if (note.uncertain) {
+          const badge = document.createElement("span");
+          badge.className = "uncertain-badge";
+          badge.textContent = "Uncertain";
+          meta.append(badge);
+        }
+
+        if (searchResults && typeof note.score === "number") {
+          const score = document.createElement("span");
+          score.className = note.match === false ? "score no-match" : "score";
+          score.textContent = note.match === false
+            ? `No good match · score ${note.score.toFixed(3)}`
+            : `Score ${note.score.toFixed(3)}`;
+          meta.append(score);
+        }
+
+        const deleteButton = document.createElement("button");
+        deleteButton.type = "button";
+        deleteButton.className = "delete-button";
+        deleteButton.textContent = "Delete";
+        deleteButton.setAttribute("aria-label", `Delete note ${note.id}`);
+        deleteButton.addEventListener("click", async () => {
+          deleteButton.disabled = true;
+          try {
+            const response = await fetch(`/notes/${encodeURIComponent(note.id)}`, {
+              method: "DELETE"
+            });
+            if (!response.ok) throw new Error("Could not delete this note.");
+            message.textContent = `Deleted note ${note.id}.`;
+            await loadNotes();
+          } catch (error) {
+            deleteButton.disabled = false;
+            message.textContent = error.message || "Could not delete this note.";
+          }
+        });
+
+        const actions = document.createElement("div");
+        actions.className = "note-actions";
+
+        const whyButton = document.createElement("button");
+        whyButton.type = "button";
+        whyButton.className = "why-button";
+        whyButton.textContent = "Why?";
+        whyButton.setAttribute("aria-label", `Why note ${note.id} was classified this way`);
+        whyButton.setAttribute("aria-expanded", "false");
+
+        const whyPanel = document.createElement("div");
+        whyPanel.className = "why-panel";
+        whyPanel.hidden = true;
+        whyPanel.setAttribute("role", "status");
+        whyButton.addEventListener("click", async () => {
+          whyButton.disabled = true;
+          try {
+            const response = await fetch(`/explain/${encodeURIComponent(note.id)}`);
+            if (!response.ok) throw new Error("Could not load this explanation.");
+            const explanation = await response.json();
+
+            const summary = document.createElement("div");
+            summary.className = "why-summary";
+            summary.textContent = `${explanation.category} · confidence ${Math.round(explanation.confidence * 100)}% · vocabulary coverage ${Math.round(explanation.coverage * 100)}%`;
+
+            const features = document.createElement("div");
+            features.className = "why-features";
+            for (const item of explanation.features) {
+              const chip = document.createElement("span");
+              chip.className = "why-chip";
+              const feature = item.feature.startsWith("word__")
+                ? item.feature.slice("word__".length)
+                : item.feature.startsWith("char__")
+                  ? `letters "${item.feature.slice("char__".length)}"`
+                  : item.feature;
+              chip.textContent = `${feature} · ${item.weight.toFixed(2)}`;
+              features.append(chip);
+            }
+
+            whyPanel.replaceChildren(summary, features);
+            whyPanel.hidden = false;
+            whyButton.setAttribute("aria-expanded", "true");
+          } catch (error) {
+            whyPanel.replaceChildren();
+            const errorText = document.createElement("div");
+            errorText.className = "why-error";
+            errorText.textContent = error.message || "Could not load this explanation.";
+            whyPanel.append(errorText);
+            whyPanel.hidden = false;
+            whyButton.setAttribute("aria-expanded", "true");
+          } finally {
+            whyButton.disabled = false;
+          }
+        });
+
+        actions.append(whyButton, deleteButton);
+        card.append(text, meta, actions, whyPanel);
+        list.append(card);
+      }
+    }
+
+    async function loadNotes() {
+      currentResults = null;
+      listTitle.textContent = "Your notes";
+      const response = await fetch("/notes");
+      if (!response.ok) throw new Error("Could not load notes.");
+      const data = await response.json();
+      allNotes = data.notes;
+      showNotes(allNotes);
+    }
+
+    document.querySelector("#note-form").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const input = document.querySelector("#note-text");
+      if (!input.value.trim()) {
+        message.textContent = "Please write a note before adding it.";
+        input.focus();
+        return;
+      }
+      try {
+        const response = await fetch("/notes", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text: input.value })
+        });
+        if (!response.ok) throw new Error("Could not save your note. Please try again.");
+        input.value = "";
+        message.textContent = "";
+        await loadNotes();
+      } catch (error) {
+        message.textContent = error.message || "Could not save your note. Please try again.";
+      }
+    });
+
+    document.querySelector("#category-filter").addEventListener("change", () => {
+      const searching = currentResults !== null;
+      showNotes(searching ? currentResults : allNotes, searching);
+    });
+
+    document.querySelector("#load-starter").addEventListener("click", async () => {
+      try {
+        const response = await fetch("/load-starter", { method: "POST" });
+        if (!response.ok) throw new Error("Could not load starter notes.");
+        const data = await response.json();
+        await loadNotes();
+        message.textContent = `Loaded ${data.added} starter note${data.added === 1 ? "" : "s"}.`;
+      } catch (error) {
+        message.textContent = error.message || "Could not load starter notes.";
+      }
+    });
+
+    document.querySelector("#search-form").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const query = document.querySelector("#search-query").value;
+      if (!query.trim()) {
+        message.textContent = "Please enter a search phrase.";
+        return;
+      }
+      try {
+        const response = await fetch(`/search?q=${encodeURIComponent(query)}`);
+        if (!response.ok) throw new Error("Could not search notes.");
+        const data = await response.json();
+        currentResults = data.results;
+        listTitle.textContent = "Search results";
+        showNotes(currentResults, true);
+        message.textContent = data.message || "";
+      } catch (error) {
+        message.textContent = error.message || "Could not search notes.";
+      }
+    });
+
+    document.querySelector("#clear-search").addEventListener("click", async () => {
+      document.querySelector("#search-query").value = "";
+      message.textContent = "";
+      try {
+        await loadNotes();
+      } catch (error) {
+        message.textContent = error.message || "Could not load notes.";
+      }
+    });
+
+    document.querySelector("#ask-form").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const input = document.querySelector("#ask-question");
+      const answer = document.querySelector("#ask-answer");
+      if (!input.value.trim()) {
+        answer.textContent = "Please enter a question about your notes.";
+        answer.classList.add("visible");
+        input.focus();
+        return;
+      }
+      try {
+        const response = await fetch("/ask", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ question: input.value })
+        });
+        if (!response.ok) throw new Error("Could not answer that question.");
+        const result = await response.json();
+        const answerText = document.createElement("div");
+        answerText.textContent = result.answer;
+        answer.replaceChildren(answerText);
+        if (result.evidence.length) {
+          const evidence = document.createElement("div");
+          evidence.className = "ask-evidence";
+          for (const item of result.evidence) {
+            const reference = document.createElement("span");
+            reference.textContent = `${item.id} · score ${item.score.toFixed(3)}`;
+            evidence.append(reference);
+          }
+          answer.append(evidence);
+        }
+        answer.classList.add("visible");
+      } catch (error) {
+        answer.textContent = error.message || "Could not answer that question.";
+        answer.classList.add("visible");
+      }
+    });
+
+    loadNotes().catch((error) => {
+      message.textContent = error.message || "Could not load notes.";
+    });
+  </script>
+</body>
+</html>

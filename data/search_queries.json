@@ -1,0 +1,82 @@
+[
+  {
+    "query": "exam",
+    "expected": ["N001"],
+    "no_overlap": true
+  },
+  {
+    "query": "electricity bill",
+    "expected": ["N002"],
+    "no_overlap": false
+  },
+  {
+    "query": "Delhi flight Monday",
+    "expected": ["N003"],
+    "no_overlap": false
+  },
+  {
+    "query": "laptop stand purchase",
+    "expected": ["N004"],
+    "no_overlap": false
+  },
+  {
+    "query": "statistics homework",
+    "expected": ["N005"],
+    "no_overlap": false
+  },
+  {
+    "query": "money transfer",
+    "expected": ["N006"],
+    "no_overlap": true
+  },
+  {
+    "query": "Jaipur hotel reservation",
+    "expected": ["N007"],
+    "no_overlap": false
+  },
+  {
+    "query": "headphone return",
+    "expected": ["N008"],
+    "no_overlap": false
+  },
+  {
+    "query": "chemistry report",
+    "expected": ["N009"],
+    "no_overlap": false
+  },
+  {
+    "query": "rent payment",
+    "expected": ["N010"],
+    "no_overlap": false
+  },
+  {
+    "query": "train journey",
+    "expected": ["N011"],
+    "no_overlap": true
+  },
+  {
+    "query": "groceries",
+    "expected": ["N012"],
+    "no_overlap": true
+  },
+  {
+    "query": "what do I need to buy?",
+    "expected": ["N004", "N012"],
+    "no_overlap": false
+  },
+  {
+    "query": "payments due soon",
+    "expected": ["N002", "N010"],
+    "no_overlap": false
+  },
+  {
+    "query": "anything for college?",
+    "expected": ["N005", "N009"],
+    "no_overlap": true
+  },
+  {
+    "query": "where am I staying?",
+    "expected": ["N007"],
+    "no_overlap": true
+  }
+]

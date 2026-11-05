@@ -1,0 +1,268 @@
+Training rows: 156
+Validation rows: 50
+Random seed: 42
+Python version: 3.12.10
+scikit-learn version: 1.6.1
+sentence-transformers version: 3.4.1
+
+Most-frequent-label baseline (label=Study)
+Accuracy: 0.300
+Macro-F1: 0.115
+Confusion matrix (rows=actual, columns=predicted):
+Labels: ['Money', 'Shopping', 'Study', 'Travel']
+[[ 0  0 11  0]
+ [ 0  0 11  0]
+ [ 0  0 15  0]
+ [ 0  0 13  0]]
+
+V1: original TF-IDF + LogisticRegression
+Accuracy: 0.680
+Macro-F1: 0.708
+Confusion matrix (rows=actual, columns=predicted):
+Labels: ['Money', 'Shopping', 'Study', 'Travel']
+[[ 8  0  0  3]
+ [ 1  9  0  1]
+ [ 0  0  7  8]
+ [ 0  0  3 10]]
+
+5-fold stratified CV on train.csv only (macro-F1):
+C=  1, features=word 1-2 grams: 0.947 (std 0.025)
+C=  1, features=word 1-2 grams + char_wb 2-5 grams: 0.967 (std 0.021)
+C=  3, features=word 1-2 grams: 0.953 (std 0.015)
+C=  3, features=word 1-2 grams + char_wb 2-5 grams: 0.967 (std 0.021)
+C= 10, features=word 1-2 grams: 0.960 (std 0.024)
+C= 10, features=word 1-2 grams + char_wb 2-5 grams: 0.967 (std 0.021)
+C= 30, features=word 1-2 grams: 0.960 (std 0.024)
+C= 30, features=word 1-2 grams + char_wb 2-5 grams: 0.972 (std 0.025)
+C=100, features=word 1-2 grams: 0.960 (std 0.024)
+C=100, features=word 1-2 grams + char_wb 2-5 grams: 0.972 (std 0.025)
+
+Selected: C=30, features=word 1-2 grams + char_wb 2-5 grams, CV macro-F1=0.972
+
+Selected model (validation)
+Accuracy: 0.900
+Macro-F1: 0.903
+Confusion matrix (rows=actual, columns=predicted):
+Labels: ['Money', 'Shopping', 'Study', 'Travel']
+[[10  0  0  1]
+ [ 0 10  0  1]
+ [ 0  0 15  0]
+ [ 0  0  3 10]]
+
+Misclassified validation notes:
+- 'I must reach the railway station by 10 AM.' | actual=Travel | predicted=Study | top_probability=0.808
+  Top features toward Study: word__am (0.242), char__st (0.209), word__by (0.208), word__10 (0.208), word__10 am (0.208)
+  Most similar training notes:
+    'The boarding time for the plane is 10 AM.' | label=Travel | cosine_similarity=0.320
+    'Attend the chemistry tutorial at 10 AM.' | label=Study | cosine_similarity=0.309
+    'Attend the machine learning tutorial at 10 AM.' | label=Study | cosine_similarity=0.292
+- 'I must reach the railway station by 2 PM.' | actual=Travel | predicted=Study | top_probability=0.753
+  Top features toward Study: word__pm (0.349), word__by (0.266), char__st (0.213), char__io (0.085), char__ati (0.085)
+  Most similar training notes:
+    'Find directions from the station to our hotel.' | label=Travel | cosine_similarity=0.241
+    'The boarding time for the plane is 2 PM.' | label=Travel | cosine_similarity=0.213
+    'The boarding time for the plane is 6 PM.' | label=Travel | cosine_similarity=0.186
+- 'Put snacks and cleaning items in the cart.' | actual=Shopping | predicted=Travel | top_probability=0.470
+  Top features toward Travel: word__in (0.760), char__in  (0.087), char__an (0.083), char__ca (0.079), char__ ca (0.079)
+  Most similar training notes:
+    'Buy groceries including rice and vegetables on the 25th.' | label=Shopping | cosine_similarity=0.195
+    'Buy groceries including rice and vegetables on Sunday.' | label=Shopping | cosine_similarity=0.185
+    'Buy groceries including rice and vegetables on Monday.' | label=Shopping | cosine_similarity=0.184
+- 'I must reach the railway station by 8 AM.' | actual=Travel | predicted=Study | top_probability=0.756
+  Top features toward Study: word__am (0.309), word__by (0.266), char__st (0.213), char__io (0.085), char__ati (0.085)
+  Most similar training notes:
+    'Find directions from the station to our hotel.' | label=Travel | cosine_similarity=0.241
+    'The boarding time for the plane is 8 AM.' | label=Travel | cosine_similarity=0.211
+    'Attend the Python tutorial at 8 AM.' | label=Study | cosine_similarity=0.194
+- 'Check the credit card balance on Sunday.' | actual=Money | predicted=Travel | top_probability=0.462
+  Top features toward Travel: word__check the (0.343), word__check (0.279), word__sunday (0.112), char__lan (0.078), char__ c (0.066)
+  Most similar training notes:
+    'Arrange a cab to the airport on Sunday.' | label=Travel | cosine_similarity=0.300
+    'Review my bank statement on Sunday.' | label=Money | cosine_similarity=0.288
+    'Ask the bank about the account balance.' | label=Money | cosine_similarity=0.278
+
+Out-of-scope note scores:
+- 'Call grandma this weekend.' | top_probability=0.497 | vocabulary_coverage=0.000
+- 'Feed the cat before 8 AM.' | top_probability=0.602 | vocabulary_coverage=0.000
+- "Doctor's appointment on Tuesday at 4 PM." | top_probability=0.864 | vocabulary_coverage=0.500
+- 'Clean the balcony on Saturday.' | top_probability=0.343 | vocabulary_coverage=0.333
+- 'Go for a walk after dinner.' | top_probability=0.495 | vocabulary_coverage=0.000
+- 'Send a thank-you note to Priya.' | top_probability=0.593 | vocabulary_coverage=0.000
+- 'Drink more water every day.' | top_probability=0.449 | vocabulary_coverage=0.333
+- 'Pick up the kids from school at 3 PM.' | top_probability=0.454 | vocabulary_coverage=0.500
+- 'Charge the power bank tonight.' | top_probability=0.508 | vocabulary_coverage=0.500
+- 'Remember to take vitamins after breakfast.' | top_probability=0.482 | vocabulary_coverage=0.333
+- 'Take the trash out on Thursday night.' | top_probability=0.732 | vocabulary_coverage=0.333
+- "Reply to the neighbour's message." | top_probability=0.678 | vocabulary_coverage=0.000
+
+Threshold trade-off (flagged if probability OR coverage is below threshold):
+Prob threshold | Coverage threshold | Out-of-scope flagged | Validation flagged
+         0.40 |              0.01 |  50.0% (6/12)       |   2.0% (1/50)
+  Out-of-scope not flagged: ["Doctor's appointment on Tuesday at 4 PM.", 'Drink more water every day.', 'Pick up the kids from school at 3 PM.', 'Charge the power bank tonight.', 'Remember to take vitamins after breakfast.', 'Take the trash out on Thursday night.']
+  Flagged validation notes (top probability, coverage):
+    - 'Put snacks and cleaning items in the cart.' (probability=0.470, coverage=0.000)
+         0.40 |              0.10 |  50.0% (6/12)       |   2.0% (1/50)
+  Out-of-scope not flagged: ["Doctor's appointment on Tuesday at 4 PM.", 'Drink more water every day.', 'Pick up the kids from school at 3 PM.', 'Charge the power bank tonight.', 'Remember to take vitamins after breakfast.', 'Take the trash out on Thursday night.']
+  Flagged validation notes (top probability, coverage):
+    - 'Put snacks and cleaning items in the cart.' (probability=0.470, coverage=0.000)
+         0.40 |              0.20 |  50.0% (6/12)       |   2.0% (1/50)
+  Out-of-scope not flagged: ["Doctor's appointment on Tuesday at 4 PM.", 'Drink more water every day.', 'Pick up the kids from school at 3 PM.', 'Charge the power bank tonight.', 'Remember to take vitamins after breakfast.', 'Take the trash out on Thursday night.']
+  Flagged validation notes (top probability, coverage):
+    - 'Put snacks and cleaning items in the cart.' (probability=0.470, coverage=0.000)
+         0.40 |              0.25 |  50.0% (6/12)       |  10.0% (5/50)
+  Out-of-scope not flagged: ["Doctor's appointment on Tuesday at 4 PM.", 'Drink more water every day.', 'Pick up the kids from school at 3 PM.', 'Charge the power bank tonight.', 'Remember to take vitamins after breakfast.', 'Take the trash out on Thursday night.']
+  Flagged validation notes (top probability, coverage):
+    - 'Put snacks and cleaning items in the cart.' (probability=0.470, coverage=0.000)
+    - 'Make flashcards for difficult statistics topics.' (probability=0.893, coverage=0.200)
+    - 'Make flashcards for difficult biology topics.' (probability=0.885, coverage=0.200)
+    - 'Make flashcards for difficult Python topics.' (probability=0.830, coverage=0.200)
+    - 'Need to exchange the size of a purchased item.' (probability=0.830, coverage=0.200)
+         0.40 |              0.34 |  75.0% (9/12)       |  32.0% (16/50)
+  Out-of-scope not flagged: ["Doctor's appointment on Tuesday at 4 PM.", 'Pick up the kids from school at 3 PM.', 'Charge the power bank tonight.']
+  Flagged validation notes (top probability, coverage):
+    - 'My internet bill needs to be settled before tomorrow.' (probability=0.464, coverage=0.250)
+    - 'Reconcile the expenses for this month.' (probability=0.894, coverage=0.333)
+    - 'Put snacks and cleaning items in the cart.' (probability=0.470, coverage=0.000)
+    - 'I must reach the railway station by 8 AM.' (probability=0.756, coverage=0.333)
+    - 'Make flashcards for difficult statistics topics.' (probability=0.893, coverage=0.200)
+    - 'My coursework for biology is still pending.' (probability=0.745, coverage=0.333)
+    - 'Make flashcards for difficult biology topics.' (probability=0.885, coverage=0.200)
+    - 'My coursework for economics is still pending.' (probability=0.561, coverage=0.333)
+    - 'Make flashcards for difficult Python topics.' (probability=0.830, coverage=0.200)
+    - 'I need to study mathematics for next week.' (probability=0.678, coverage=0.250)
+    - 'Need to exchange the size of a purchased item.' (probability=0.830, coverage=0.200)
+    - 'I need to study economics for next week.' (probability=0.462, coverage=0.250)
+    - 'My internet bill needs to be settled before Saturday.' (probability=0.538, coverage=0.250)
+    - 'My coursework for history is still pending.' (probability=0.569, coverage=0.333)
+    - 'My internet bill needs to be settled before Wednesday.' (probability=0.524, coverage=0.250)
+    - 'I need to study chemistry for next week.' (probability=0.530, coverage=0.250)
+         0.45 |              0.01 |  58.3% (7/12)       |   8.0% (4/50)
+  Out-of-scope not flagged: ["Doctor's appointment on Tuesday at 4 PM.", 'Pick up the kids from school at 3 PM.', 'Charge the power bank tonight.', 'Remember to take vitamins after breakfast.', 'Take the trash out on Thursday night.']
+  Flagged validation notes (top probability, coverage):
+    - 'Our return journey from Jaipur is on Wednesday.' (probability=0.441, coverage=0.750)
+    - 'Put snacks and cleaning items in the cart.' (probability=0.470, coverage=0.000)
+    - 'Check the credit card balance on the 25th.' (probability=0.448, coverage=0.600)
+    - 'The teacher moved our history quiz to Monday.' (probability=0.436, coverage=0.400)
+         0.45 |              0.10 |  58.3% (7/12)       |   8.0% (4/50)
+  Out-of-scope not flagged: ["Doctor's appointment on Tuesday at 4 PM.", 'Pick up the kids from school at 3 PM.', 'Charge the power bank tonight.', 'Remember to take vitamins after breakfast.', 'Take the trash out on Thursday night.']
+  Flagged validation notes (top probability, coverage):
+    - 'Our return journey from Jaipur is on Wednesday.' (probability=0.441, coverage=0.750)
+    - 'Put snacks and cleaning items in the cart.' (probability=0.470, coverage=0.000)
+    - 'Check the credit card balance on the 25th.' (probability=0.448, coverage=0.600)
+    - 'The teacher moved our history quiz to Monday.' (probability=0.436, coverage=0.400)
+         0.45 |              0.20 |  58.3% (7/12)       |   8.0% (4/50)
+  Out-of-scope not flagged: ["Doctor's appointment on Tuesday at 4 PM.", 'Pick up the kids from school at 3 PM.', 'Charge the power bank tonight.', 'Remember to take vitamins after breakfast.', 'Take the trash out on Thursday night.']
+  Flagged validation notes (top probability, coverage):
+    - 'Our return journey from Jaipur is on Wednesday.' (probability=0.441, coverage=0.750)
+    - 'Put snacks and cleaning items in the cart.' (probability=0.470, coverage=0.000)
+    - 'Check the credit card balance on the 25th.' (probability=0.448, coverage=0.600)
+    - 'The teacher moved our history quiz to Monday.' (probability=0.436, coverage=0.400)
+         0.45 |              0.25 |  58.3% (7/12)       |  16.0% (8/50)
+  Out-of-scope not flagged: ["Doctor's appointment on Tuesday at 4 PM.", 'Pick up the kids from school at 3 PM.', 'Charge the power bank tonight.', 'Remember to take vitamins after breakfast.', 'Take the trash out on Thursday night.']
+  Flagged validation notes (top probability, coverage):
+    - 'Our return journey from Jaipur is on Wednesday.' (probability=0.441, coverage=0.750)
+    - 'Put snacks and cleaning items in the cart.' (probability=0.470, coverage=0.000)
+    - 'Make flashcards for difficult statistics topics.' (probability=0.893, coverage=0.200)
+    - 'Make flashcards for difficult biology topics.' (probability=0.885, coverage=0.200)
+    - 'Make flashcards for difficult Python topics.' (probability=0.830, coverage=0.200)
+    - 'Need to exchange the size of a purchased item.' (probability=0.830, coverage=0.200)
+    - 'Check the credit card balance on the 25th.' (probability=0.448, coverage=0.600)
+    - 'The teacher moved our history quiz to Monday.' (probability=0.436, coverage=0.400)
+         0.45 |              0.34 |  75.0% (9/12)       |  38.0% (19/50)
+  Out-of-scope not flagged: ["Doctor's appointment on Tuesday at 4 PM.", 'Pick up the kids from school at 3 PM.', 'Charge the power bank tonight.']
+  Flagged validation notes (top probability, coverage):
+    - 'Our return journey from Jaipur is on Wednesday.' (probability=0.441, coverage=0.750)
+    - 'My internet bill needs to be settled before tomorrow.' (probability=0.464, coverage=0.250)
+    - 'Reconcile the expenses for this month.' (probability=0.894, coverage=0.333)
+    - 'Put snacks and cleaning items in the cart.' (probability=0.470, coverage=0.000)
+    - 'I must reach the railway station by 8 AM.' (probability=0.756, coverage=0.333)
+    - 'Make flashcards for difficult statistics topics.' (probability=0.893, coverage=0.200)
+    - 'My coursework for biology is still pending.' (probability=0.745, coverage=0.333)
+    - 'Make flashcards for difficult biology topics.' (probability=0.885, coverage=0.200)
+    - 'My coursework for economics is still pending.' (probability=0.561, coverage=0.333)
+    - 'Make flashcards for difficult Python topics.' (probability=0.830, coverage=0.200)
+    - 'I need to study mathematics for next week.' (probability=0.678, coverage=0.250)
+    - 'Need to exchange the size of a purchased item.' (probability=0.830, coverage=0.200)
+    - 'I need to study economics for next week.' (probability=0.462, coverage=0.250)
+    - 'My internet bill needs to be settled before Saturday.' (probability=0.538, coverage=0.250)
+    - 'My coursework for history is still pending.' (probability=0.569, coverage=0.333)
+    - 'Check the credit card balance on the 25th.' (probability=0.448, coverage=0.600)
+    - 'My internet bill needs to be settled before Wednesday.' (probability=0.524, coverage=0.250)
+    - 'I need to study chemistry for next week.' (probability=0.530, coverage=0.250)
+    - 'The teacher moved our history quiz to Monday.' (probability=0.436, coverage=0.400)
+         0.50 |              0.01 |  75.0% (9/12)       |  16.0% (8/50)
+  Out-of-scope not flagged: ["Doctor's appointment on Tuesday at 4 PM.", 'Charge the power bank tonight.', 'Take the trash out on Thursday night.']
+  Flagged validation notes (top probability, coverage):
+    - 'Our return journey from Jaipur is on Wednesday.' (probability=0.441, coverage=0.750)
+    - 'My internet bill needs to be settled before tomorrow.' (probability=0.464, coverage=0.250)
+    - 'Put snacks and cleaning items in the cart.' (probability=0.470, coverage=0.000)
+    - 'Check the credit card balance on Sunday.' (probability=0.462, coverage=0.600)
+    - 'I need to study economics for next week.' (probability=0.462, coverage=0.250)
+    - 'Check the credit card balance on the 25th.' (probability=0.448, coverage=0.600)
+    - 'Check the credit card balance on Wednesday.' (probability=0.465, coverage=0.600)
+    - 'The teacher moved our history quiz to Monday.' (probability=0.436, coverage=0.400)
+         0.50 |              0.10 |  75.0% (9/12)       |  16.0% (8/50)
+  Out-of-scope not flagged: ["Doctor's appointment on Tuesday at 4 PM.", 'Charge the power bank tonight.', 'Take the trash out on Thursday night.']
+  Flagged validation notes (top probability, coverage):
+    - 'Our return journey from Jaipur is on Wednesday.' (probability=0.441, coverage=0.750)
+    - 'My internet bill needs to be settled before tomorrow.' (probability=0.464, coverage=0.250)
+    - 'Put snacks and cleaning items in the cart.' (probability=0.470, coverage=0.000)
+    - 'Check the credit card balance on Sunday.' (probability=0.462, coverage=0.600)
+    - 'I need to study economics for next week.' (probability=0.462, coverage=0.250)
+    - 'Check the credit card balance on the 25th.' (probability=0.448, coverage=0.600)
+    - 'Check the credit card balance on Wednesday.' (probability=0.465, coverage=0.600)
+    - 'The teacher moved our history quiz to Monday.' (probability=0.436, coverage=0.400)
+         0.50 |              0.20 |  75.0% (9/12)       |  16.0% (8/50)
+  Out-of-scope not flagged: ["Doctor's appointment on Tuesday at 4 PM.", 'Charge the power bank tonight.', 'Take the trash out on Thursday night.']
+  Flagged validation notes (top probability, coverage):
+    - 'Our return journey from Jaipur is on Wednesday.' (probability=0.441, coverage=0.750)
+    - 'My internet bill needs to be settled before tomorrow.' (probability=0.464, coverage=0.250)
+    - 'Put snacks and cleaning items in the cart.' (probability=0.470, coverage=0.000)
+    - 'Check the credit card balance on Sunday.' (probability=0.462, coverage=0.600)
+    - 'I need to study economics for next week.' (probability=0.462, coverage=0.250)
+    - 'Check the credit card balance on the 25th.' (probability=0.448, coverage=0.600)
+    - 'Check the credit card balance on Wednesday.' (probability=0.465, coverage=0.600)
+    - 'The teacher moved our history quiz to Monday.' (probability=0.436, coverage=0.400)
+         0.50 |              0.25 |  75.0% (9/12)       |  24.0% (12/50)
+  Out-of-scope not flagged: ["Doctor's appointment on Tuesday at 4 PM.", 'Charge the power bank tonight.', 'Take the trash out on Thursday night.']
+  Flagged validation notes (top probability, coverage):
+    - 'Our return journey from Jaipur is on Wednesday.' (probability=0.441, coverage=0.750)
+    - 'My internet bill needs to be settled before tomorrow.' (probability=0.464, coverage=0.250)
+    - 'Put snacks and cleaning items in the cart.' (probability=0.470, coverage=0.000)
+    - 'Make flashcards for difficult statistics topics.' (probability=0.893, coverage=0.200)
+    - 'Make flashcards for difficult biology topics.' (probability=0.885, coverage=0.200)
+    - 'Check the credit card balance on Sunday.' (probability=0.462, coverage=0.600)
+    - 'Make flashcards for difficult Python topics.' (probability=0.830, coverage=0.200)
+    - 'Need to exchange the size of a purchased item.' (probability=0.830, coverage=0.200)
+    - 'I need to study economics for next week.' (probability=0.462, coverage=0.250)
+    - 'Check the credit card balance on the 25th.' (probability=0.448, coverage=0.600)
+    - 'Check the credit card balance on Wednesday.' (probability=0.465, coverage=0.600)
+    - 'The teacher moved our history quiz to Monday.' (probability=0.436, coverage=0.400)
+         0.50 |              0.34 |  83.3% (10/12)       |  42.0% (21/50)
+  Out-of-scope not flagged: ["Doctor's appointment on Tuesday at 4 PM.", 'Charge the power bank tonight.']
+  Flagged validation notes (top probability, coverage):
+    - 'Our return journey from Jaipur is on Wednesday.' (probability=0.441, coverage=0.750)
+    - 'My internet bill needs to be settled before tomorrow.' (probability=0.464, coverage=0.250)
+    - 'Reconcile the expenses for this month.' (probability=0.894, coverage=0.333)
+    - 'Put snacks and cleaning items in the cart.' (probability=0.470, coverage=0.000)
+    - 'I must reach the railway station by 8 AM.' (probability=0.756, coverage=0.333)
+    - 'Make flashcards for difficult statistics topics.' (probability=0.893, coverage=0.200)
+    - 'My coursework for biology is still pending.' (probability=0.745, coverage=0.333)
+    - 'Make flashcards for difficult biology topics.' (probability=0.885, coverage=0.200)
+    - 'Check the credit card balance on Sunday.' (probability=0.462, coverage=0.600)
+    - 'My coursework for economics is still pending.' (probability=0.561, coverage=0.333)
+    - 'Make flashcards for difficult Python topics.' (probability=0.830, coverage=0.200)
+    - 'I need to study mathematics for next week.' (probability=0.678, coverage=0.250)
+    - 'Need to exchange the size of a purchased item.' (probability=0.830, coverage=0.200)
+    - 'I need to study economics for next week.' (probability=0.462, coverage=0.250)
+    - 'My internet bill needs to be settled before Saturday.' (probability=0.538, coverage=0.250)
+    - 'My coursework for history is still pending.' (probability=0.569, coverage=0.333)
+    - 'Check the credit card balance on the 25th.' (probability=0.448, coverage=0.600)
+    - 'My internet bill needs to be settled before Wednesday.' (probability=0.524, coverage=0.250)
+    - 'I need to study chemistry for next week.' (probability=0.530, coverage=0.250)
+    - 'Check the credit card balance on Wednesday.' (probability=0.465, coverage=0.600)
+    - 'The teacher moved our history quiz to Monday.' (probability=0.436, coverage=0.400)
+
+Saved uncertainty thresholds: probability=0.45, coverage=0.20
+
+Saved model to model.joblib

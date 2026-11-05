@@ -1,0 +1,15 @@
+Search evaluation (hit rate @3):
+Keyword overlap: all queries 75.0% (12/16); no-overlap 33.3% (2/6)
+TF-IDF cosine: all queries 75.0% (12/16); no-overlap 33.3% (2/6)
+Embeddings cosine: all queries 93.8% (15/16); no-overlap 83.3% (5/6)
+
+Failed queries (top 3 result IDs):
+- Keyword overlap | query='exam' | expected=['N001'] | top3=['N012', 'N011', 'N010']
+- Keyword overlap | query='money transfer' | expected=['N006'] | top3=['N012', 'N011', 'N010']
+- Keyword overlap | query='anything for college?' | expected=['N005', 'N009'] | top3=['N012', 'N011', 'N010']
+- Keyword overlap | query='where am I staying?' | expected=['N007'] | top3=['N012', 'N011', 'N010']
+- TF-IDF cosine | query='exam' | expected=['N001'] | top3=['N012', 'N011', 'N010']
+- TF-IDF cosine | query='money transfer' | expected=['N006'] | top3=['N012', 'N011', 'N010']
+- TF-IDF cosine | query='anything for college?' | expected=['N005', 'N009'] | top3=['N007', 'N011', 'N012']
+- TF-IDF cosine | query='where am I staying?' | expected=['N007'] | top3=['N001', 'N011', 'N012']
+- Embeddings cosine | query='where am I staying?' | expected=['N007'] | top3=['N006', 'N010', 'N011']
